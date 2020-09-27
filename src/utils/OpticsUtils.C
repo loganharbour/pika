@@ -63,15 +63,4 @@ reflectionCoefficient(const Point & incident_direction,
   return 0.5 * (Rs + Rp);
 }
 
-Point
-reflectedDirection(const Point & direction, const Point & normal)
-{
-  mooseAssert(MooseUtils::absoluteFuzzyEqual(direction.norm(), 1), "Unnormalized direction");
-  mooseAssert(MooseUtils::absoluteFuzzyEqual(normal.norm(), 1), "Unnormalized normal");
-
-  Point reflected_direction = direction;
-  reflected_direction -= 2.0 * (reflected_direction * normal) * normal;
-  return reflected_direction;
-}
-
 };

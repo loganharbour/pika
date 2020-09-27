@@ -16,8 +16,11 @@ public:
 
   static InputParameters validParams();
 
-  virtual void
-  onSegment(const Elem * elem, const Point & start, const Point & end, bool ends_in_elem) override;
+  virtual void onSegment(const Elem * elem,
+                         const Point & start,
+                         const Point & end,
+                         const Real length,
+                         bool ends_in_elem) override;
 
 protected:
   /// The OpticRayStudyBase

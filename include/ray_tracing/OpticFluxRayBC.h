@@ -25,7 +25,7 @@ public:
              const BoundaryID bnd_id,
              const Point & intersection_point,
              const std::shared_ptr<Ray> & ray,
-             const bool applying_at_corner) override;
+             const unsigned int num_applying) override;
 
 protected:
   /// Storage for accumulating the flux

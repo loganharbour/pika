@@ -28,12 +28,10 @@ OpticFluxRayBC::apply(const Elem * /* elem */,
                       const BoundaryID /* bnd_id */,
                       const Point & /* intersection_point */,
                       const std::shared_ptr<Ray> & ray,
-                      const bool applying_at_corner)
+                      const unsigned int num_applying)
 {
-  const auto factor = applying_at_corner ? (_mesh.dimension() == 2 ? 0.5 : (1.0 / 3.0)) : 1;
-
   for (unsigned int g = 0; g < _num_energy_groups; ++g)
-    _values[g] += factor * ray->data(_energy_index + g);
+    _values[g] += ray->data(_energy_index + g) / (Real)num_applying;
 }
 
 void

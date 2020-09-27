@@ -15,6 +15,12 @@
 class OnTheFlyVariableValue
 {
 public:
+  enum VariableValueType
+  {
+    VALUE,
+    GRAD_VALUE
+  };
+
   /**
    * Constructor.
    * @param dim Mesh dimension
@@ -25,14 +31,22 @@ public:
   OnTheFlyVariableValue(const unsigned int dim,
                         const libMesh::FEType fe_type,
                         const VariableValue & dof_values,
-                        const Elem * const & current_elem);
+                        const Elem * const & current_elem,
+                        const std::set<VariableValueType> & value_types);
 
   /**
    * Compute the field value in the current element at a point
    * @param point The point
    * @return The value
    */
-  Real operator()(const Point & point);
+  Real value(const Point & point);
+
+  /**
+   * Compute the field value in the current element at a point
+   * @param point The point
+   * @return The value
+   */
+  RealGradient gradValue(const Point & point);
 
 protected:
   /// Mesh dimension
@@ -45,4 +59,7 @@ protected:
   const VariableValue & _dof_values;
   /// Current element
   const Elem * const & _current_elem;
+
+  const bool _has_value;
+  const bool _has_grad_value;
 };

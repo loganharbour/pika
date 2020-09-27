@@ -29,7 +29,7 @@ UniformOpticRayStudy::UniformOpticRayStudy(const InputParameters & parameters)
   if (!isRectangularDomain())
     mooseError("Optic ray study ", name(), " does not support non-rectangular domains");
   if (_intensity.size() != _num_energy_groups)
-    paramError("intesntiy",
+    paramError("intensity",
                "Should be of the same size as the number of energy groups, ",
                _num_energy_groups);
   if (_splits.size() != _bnd_ids.size())

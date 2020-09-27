@@ -26,7 +26,7 @@ public:
                      const BoundaryID bnd_id,
                      const Point & intersection_point,
                      const std::shared_ptr<Ray> & ray,
-                     const bool applying_at_corner) = 0;
+                     const unsigned int num_applying) = 0;
 
 protected:
   /// The OpticRayStudyBase

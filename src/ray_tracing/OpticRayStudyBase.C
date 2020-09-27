@@ -1,8 +1,5 @@
 #include "OpticRayStudyBase.h"
 
-// MOOSE incldues
-#include "RayStudyTraceRay.h"
-
 InputParameters
 OpticRayStudyBase::validParams()
 {
@@ -10,8 +7,9 @@ OpticRayStudyBase::validParams()
 
   params.addParam<unsigned int>("energy_groups", 0, "Number of energy groups");
 
-  params.set<bool>("use_ray_registration") = false;
-  params.set<bool>("allow_generation_during_propagation") = true;
+  params.set<bool>("_use_ray_registration") = false;
+  params.set<bool>("_allow_generation_during_propagation") = true;
+  params.set<bool>("_ray_dependent_subdomain_setup") = false;
 
   return params;
 }
@@ -28,10 +26,6 @@ OpticRayStudyBase::OpticRayStudyBase(const InputParameters & parameters)
   // We will resize the data manually when we generate the Rays
   _set_data_at_generation = false;
 
-  // Subdomain setup in the trace does not depend on the Ray here
-  for (auto & trace_ray : threadedTraceRay())
-    trace_ray->setRayDependentSubdomainSetup(false);
-
   if (_num_energy_groups > 1)
     for (unsigned int g = 1; g < _num_energy_groups; ++g)
       registerRayData("energy_data_g" + std::to_string(g));
@@ -46,7 +40,7 @@ OpticRayStudyBase::defineRay(const Point & start,
                              const bool size_data /* = true */,
                              const bool size_aux_data /* = true */)
 {
-  std::shared_ptr<Ray> ray = _ray_pool.acquire();
+  std::shared_ptr<Ray> ray = _ray_pool->acquire();
   _rays.push_back(ray);
 
   const auto unit_direction = direction.unit();
@@ -80,12 +74,14 @@ OpticRayStudyBase::defineRay(const Point & start,
 }
 
 Ray &
-OpticRayStudyBase::addRayDuringTrace(const Point & start,
-                                     const Elem * elem,
-                                     const Point & direction,
-                                     const THREAD_ID tid)
+OpticRayStudyBase::addReflectedRay(const Point & start,
+                                   const Elem * elem,
+                                   const Point & direction,
+                                   const Ray & parent_ray,
+                                   const Real energy_factor,
+                                   const THREAD_ID tid)
 {
-  std::shared_ptr<Ray> ray = _ray_pool.acquire();
+  std::shared_ptr<Ray> ray = _ray_pool->acquire();
   addToThreadedBuffer(ray, tid);
 
   if (++_threaded_rays_added[tid] > _max_thread_ids)
@@ -101,10 +97,10 @@ OpticRayStudyBase::addRayDuringTrace(const Point & start,
   ray->auxData().resize(rayAuxDataSize(), 0);
   ray->data().resize(rayDataSize(), 0);
 
-  if (ray->intersections() != 0)
-    mooseError("bad intersections");
+  for (unsigned int g = 0; g < _num_energy_groups; ++g)
+    ray->data(_energy_data_index + g) = energy_factor * parent_ray.data(_energy_data_index + g);
 
-  return *ray.get();
+  return *ray;
 }
 
 void

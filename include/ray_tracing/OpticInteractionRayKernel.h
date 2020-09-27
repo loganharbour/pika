@@ -17,8 +17,11 @@ public:
 
   static InputParameters validParams();
 
-  virtual void
-  onSegment(const Elem * elem, const Point & start, const Point & end, bool ends_in_elem) override;
+  virtual void onSegment(const Elem * elem,
+                         const Point & start,
+                         const Point & end,
+                         const Real length,
+                         bool ends_in_elem) override;
 
 protected:
   /**
@@ -41,6 +44,8 @@ protected:
                     const Point & end,
                     const std::vector<Real> & attenuation_coefficient);
 
+  bool underThreshold(const Real factor = 1) const;
+
   /// The OpticRayStudyBase
   OpticRayStudyBase & _optic_study;
   /// The number of energy groups in the study
@@ -48,10 +53,10 @@ protected:
 
   /// The field variable that contains the phase
   const VariableValue & _phase;
-  /// The gradient of the field variable that contains the phase
-  const VariableGradient & _grad_phase;
   /// On the fly value for the phase for quick reinits
   OnTheFlyVariableValue _otf_phase;
+  /// On the fly grad value for the phase for quick reinits
+  OnTheFlyVariableValue _otf_grad_phase;
 
   /// The refractive index for phase 0
   const Real _refractive_index_0;
@@ -65,6 +70,8 @@ protected:
   const std::vector<Real> _attenuation_coefficient_0;
   /// The group-wise linear attenuation coefficients for phase 1
   const std::vector<Real> _attenuation_coefficient_1;
+
+  const std::vector<Real> _threshold;
 
   /// The index into the Ray's aux data for the just interacted flag
   const RayDataIndex _just_interacted_aux_index;

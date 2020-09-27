@@ -30,6 +30,7 @@ void
 OpticThresholdRayKernel::onSegment(const Elem * /* elem */,
                                    const Point & /* start */,
                                    const Point & /* end */,
+                                   const Real /* length */,
                                    bool /* ends_in_elem */)
 {
   for (unsigned int g = 0; g < _num_energy_groups; ++g)

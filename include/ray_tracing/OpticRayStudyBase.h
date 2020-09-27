@@ -40,10 +40,12 @@ public:
    * @param tid The thread
    * /return The created Ray (for modification: changing data, etc)
    */
-  Ray & addRayDuringTrace(const Point & start,
-                          const Elem * elem,
-                          const Point & direction,
-                          const THREAD_ID tid);
+  Ray & addReflectedRay(const Point & start,
+                        const Elem * elem,
+                        const Point & direction,
+                        const Ray & parent_ray,
+                        const Real energy_factor,
+                        const THREAD_ID tid);
 
 protected:
   virtual void defineRays() override = 0;
